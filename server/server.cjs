@@ -197,6 +197,9 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // Невідомі /api/* — JSON 404, а не SPA-сторінка
+  if (parts[0] === 'api') return send(res, 404, { error: 'Not found' })
+
   // Усе, що не /api — віддаємо зібраний додаток (SPA)
   if (req.method === 'GET' || req.method === 'HEAD') return serveStatic(res, url.pathname)
 
