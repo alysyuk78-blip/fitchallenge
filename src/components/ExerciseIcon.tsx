@@ -1,24 +1,17 @@
-import {
-  ArrowDownUp,
-  BicepsFlexed,
-  Dumbbell,
-  Footprints,
-  Route,
-  StretchHorizontal,
-  Wind,
-  type LucideIcon,
-} from 'lucide-react'
+import Pictogram, { type PictogramName } from '@/components/pictograms'
 import type { Exercise } from '@/types'
 
-/** Преміальні контурні іконки для стандартних вправ (за id). Користувацькі вправи — емодзі. */
-const EXERCISE_ICONS: Record<string, LucideIcon> = {
-  'ex-pushups': BicepsFlexed, // віджимання — напружений біцепс
-  'ex-squats': ArrowDownUp, // присідання — рух вниз-вгору
-  'ex-walk-steps': Footprints, // ходьба в кроках — сліди
-  'ex-walk-km': Route, // ходьба в км — маршрут
-  'ex-run-km': Wind, // біг — швидкість
-  'ex-plank': StretchHorizontal, // планка — горизонтальне тіло
-  'ex-pullups': Dumbbell, // підтягування — силова
+/** Спортивні піктограми для стандартних вправ (за id). Користувацькі вправи — емодзі. */
+const EXERCISE_PICTOGRAMS: Record<string, PictogramName> = {
+  'ex-pushups': 'pushup', // віджимання від підлоги
+  'ex-squats': 'squat', // присідання
+  'ex-walk-steps': 'walk', // ходьба (кроки)
+  'ex-walk-km': 'walk', // ходьба (км)
+  'ex-run-km': 'run', // біг
+  'ex-cycling': 'cycling', // велопробіг
+  'ex-plank': 'plank', // планка
+  'ex-pullups': 'pullup', // підтягування
+  'ex-core': 'core', // м'язи кора
 }
 
 interface Props {
@@ -27,7 +20,7 @@ interface Props {
 }
 
 export default function ExerciseIcon({ exercise, className = 'h-4 w-4' }: Props) {
-  const Icon = EXERCISE_ICONS[exercise.id]
-  if (Icon) return <Icon className={className} aria-label={exercise.name} />
+  const pictogram = EXERCISE_PICTOGRAMS[exercise.id]
+  if (pictogram) return <Pictogram name={pictogram} className={className} />
   return <span className={className}>{exercise.emoji}</span>
 }

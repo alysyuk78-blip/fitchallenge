@@ -1,10 +1,11 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
-import { BedDouble, Flag, ListPlus, Plus, UserPlus, X, Zap } from 'lucide-react'
+import { BedDouble, ListPlus, Plus, UserPlus, X, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ParticipantDialog from '@/components/ParticipantDialog'
 import ExerciseIcon from '@/components/ExerciseIcon'
+import Pictogram from '@/components/pictograms'
 import { todayLocal } from '@/hooks/useCompetition'
 import type { SetDraft } from '@/hooks/useSetDrafts'
 import { fireConfetti } from '@/lib/confetti'
@@ -381,7 +382,7 @@ export default function QuickLog({
                         onClick={submitFinish}
                         className="btn-glow ml-auto bg-volt px-6 font-black text-background hover:bg-volt/90"
                       >
-                        <Flag className="mr-1.5 h-4 w-4" /> Фініш
+                        <Pictogram name="finish" className="mr-1.5 h-5 w-5" /> Фініш
                       </Button>
                     </div>
                   </>

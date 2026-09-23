@@ -26,15 +26,35 @@ export const DEFAULT_EXERCISES: Exercise[] = [
   { id: 'ex-walk-steps', name: 'Ходьба (кроки)', unit: 'кроків', emoji: '🚶' },
   { id: 'ex-walk-km', name: 'Ходьба (км)', unit: 'км', emoji: '🥾' },
   { id: 'ex-run-km', name: 'Біг (км)', unit: 'км', emoji: '🏃' },
+  { id: 'ex-cycling', name: 'Велопробіг (км)', unit: 'км', emoji: '🚴' },
   { id: 'ex-plank', name: 'Планка', unit: 'сек', emoji: '🧱' },
   { id: 'ex-pullups', name: 'Підтягування', unit: 'разів', emoji: '🏋️' },
+  { id: 'ex-core', name: "М'язи кора", unit: 'разів', emoji: '🤸' },
 ]
+
+/** Версія набору стандартних вправ — піднімати при додаванні нових */
+export const DEFAULTS_VERSION = 2
 
 const EMPTY_STATE: CompetitionState = {
   participants: [],
   exercises: DEFAULT_EXERCISES,
   entries: [],
   skips: [],
+  defaultsVersion: DEFAULTS_VERSION,
+}
+
+/** Міграція: доповнити нові стандартні вправи у наявний стан (без дублікатів) */
+function migrateState(parsed: Partial<CompetitionState>): CompetitionState {
+  let s = {
+    ...parsed,
+    skips: Array.isArray(parsed.skips) ? parsed.skips : [],
+  } as CompetitionState
+  if (s.defaultsVersion !== DEFAULTS_VERSION) {
+    const existing = new Set(s.exercises.map((e) => e.id))
+    const missing = DEFAULT_EXERCISES.filter((e) => !existing.has(e.id))
+    s = { ...s, exercises: [...s.exercises, ...missing], defaultsVersion: DEFAULTS_VERSION }
+  }
+  return s
 }
 
 export function uid(): string {
@@ -61,8 +81,8 @@ function loadState(): CompetitionState {
     if (!Array.isArray(parsed.participants) || !Array.isArray(parsed.exercises) || !Array.isArray(parsed.entries)) {
       return EMPTY_STATE
     }
-    // міграція старих станів без пропусків
-    return { ...parsed, skips: Array.isArray(parsed.skips) ? parsed.skips : [] } as CompetitionState
+    // міграція старих станів без пропусків + нові стандартні вправи
+    return migrateState(parsed)
   } catch {
     return EMPTY_STATE
   }
@@ -85,8 +105,10 @@ function buildDemo(): CompetitionState {
     'ex-walk-steps': 6500,
     'ex-walk-km': 4.5,
     'ex-run-km': 3.2,
+    'ex-cycling': 9,
     'ex-plank': 70,
     'ex-pullups': 8,
+    'ex-core': 25,
   }
   for (let day = 13; day >= 0; day--) {
     for (const p of participants) {
@@ -116,6 +138,7 @@ function buildDemo(): CompetitionState {
       { id: 'demo-skip-1', participantId: 'p-sofia', date: dateOffset(2), reason: 'sick' },
       { id: 'demo-skip-2', participantId: 'p-oleh', date: dateOffset(5), reason: 'lazy' },
     ],
+    defaultsVersion: DEFAULTS_VERSION,
   }
 }
 
@@ -213,7 +236,7 @@ export function useCompetition() {
 
   /** Застосувати стан, отриманий із сервера спільного доступу */
   const applyRemoteState = useCallback((remote: CompetitionState) => {
-    setState({ ...remote, skips: Array.isArray(remote.skips) ? remote.skips : [] })
+    setState(migrateState(remote))
   }, [])
 
   return {

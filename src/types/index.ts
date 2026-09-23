@@ -46,4 +46,6 @@ export interface CompetitionState {
   exercises: Exercise[]
   entries: Entry[]
   skips: Skip[]
+  /** Версія набору стандартних вправ — для міграції при додаванні нових */
+  defaultsVersion?: number
 }
