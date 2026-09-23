@@ -1,27 +1,12 @@
 # 🚀 Деплой FitChallenge — публічний доступ для друзів
 
-Додаток готовий до деплою **одним сервісом**: сервер (`server/server.cjs`) віддає і API синхронізації, і сам додаток. Нижче — покрокова інструкція для Render.com (безкоштовно, ~10 хвилин).
+Додаток готовий до деплою **одним сервісом**: сервер (`server/server.cjs`) віддає і API синхронізації, і сам додаток.
 
-## Крок 1. Код на GitHub
+✅ **Код уже на GitHub**: [github.com/alysyuk78-blip/fitchallenge](https://github.com/alysyuk78-blip/fitchallenge) — лишилося лише підключити Render (~5 хвилин).
 
-```bash
-cd app
-git init            # якщо папка ще не в git
-git add .
-git commit -m "FitChallenge"
-```
+## Крок 1. Render.com
 
-Далі на github.com створіть новий репозиторій (наприклад, `fitchallenge`, можна приватний) і виконайте команди, які GitHub покаже:
-
-```bash
-git remote add origin https://github.com/ВАШ_АКАУНТ/fitchallenge.git
-git branch -M main
-git push -u origin main
-```
-
-## Крок 2. Render.com
-
-1. Зареєструйтесь на [render.com](https://render.com) (можна через GitHub).
+1. Зареєструйтесь на [render.com](https://render.com) — найпростіше кнопкою **«Sign in with GitHub»**.
 2. **New → Blueprint Instance** → виберіть репозиторій `fitchallenge`.
 3. Render сам підхопить `render.yaml`: збірка `npm ci && npm run build`, запуск `node server/server.cjs`.
 4. Натисніть **Apply** і дочекайтесь зеленого статусу (3–5 хв).
@@ -29,7 +14,7 @@ git push -u origin main
 
 > Альтернатива без Blueprint: **New → Web Service** → репозиторій → Build Command `npm ci && npm run build`, Start Command `node server/server.cjs`.
 
-## Крок 3. Підключення друзів
+## Крок 2. Підключення друзів
 
 1. Кожен відкриває посилання на своєму телефоні/комп'ютері.
 2. Вкладка **«⚙️ Команда і вправи» → «Спільний доступ»**.
