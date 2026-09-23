@@ -1,0 +1,11 @@
+# FitChallenge — деплой одним сервісом на Render.com
+# Render підхопить цей файл автоматично (New → Blueprint Instance).
+# Результат: одне публічне HTTPS-посилання — і додаток, і сервер синхронізації разом.
+services:
+  - type: web
+    name: fitchallenge
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: node server/server.cjs
+    healthCheckPath: /api/health

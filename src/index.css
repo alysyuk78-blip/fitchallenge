@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 9% 5%;
+    --foreground: 72 25% 95%;
+    --card: 240 7% 8%;
+    --card-foreground: 72 25% 95%;
+    --popover: 240 7% 8%;
+    --popover-foreground: 72 25% 95%;
+    --primary: 71 96% 54%;
+    --primary-foreground: 240 12% 5%;
+    --secondary: 240 6% 13%;
+    --secondary-foreground: 72 25% 95%;
+    --muted: 240 6% 13%;
+    --muted-foreground: 240 5% 58%;
+    --accent: 240 6% 13%;
+    --accent-foreground: 72 25% 95%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 16%;
+    --input: 240 5% 20%;
+    --ring: 71 96% 54%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', 'Segoe UI',
+      Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'cv05', 'ss01';
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI',
+      Roboto, 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .text-volt {
+    color: hsl(71 96% 54%);
+  }
+  .bg-volt {
+    background-color: hsl(71 96% 54%);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Тонка смуга прокрутки в темній темі */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(240 5% 20%);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Нативні елементи у темній темі */
+input[type='date'] {
+  color-scheme: dark;
+}
+
+/* ── Преміальні ефекти ─────────────────────────────── */
+
+/* Живий фон-аврора */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(6vw, -4vh) scale(1.15);
+  }
+  66% {
+    transform: translate(-5vw, 5vh) scale(0.95);
+  }
+}
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora::before,
+.aurora::after {
+  content: '';
+  position: absolute;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.07;
+}
+.aurora::before {
+  top: -20vmax;
+  right: -15vmax;
+  background: hsl(71 96% 54%);
+  animation: aurora-drift 26s ease-in-out infinite;
+}
+.aurora::after {
+  bottom: -25vmax;
+  left: -15vmax;
+  background: hsl(350 90% 55%);
+  animation: aurora-drift 32s ease-in-out infinite reverse;
+}
+
+/* Сяйво-переливання на картці лідера */
+@keyframes shimmer-slide {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.leader-glow {
+  position: relative;
+  overflow: hidden;
+}
+.leader-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    hsl(71 96% 54% / 0.14) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slide 3.2s linear infinite;
+  pointer-events: none;
+}
+
+/* Пульс-сяйво головної кнопки */
+@keyframes volt-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(71 96% 54% / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 24px 4px hsl(71 96% 54% / 0.18);
+  }
+}
+.btn-glow {
+  animation: volt-pulse 2.6s ease-in-out infinite;
+}
+
+/* Поява елементів */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise-in {
+  animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora::before,
+  .aurora::after,
+  .leader-glow::after,
+  .btn-glow,
+  .rise-in {
+    animation: none;
+  }
+}
