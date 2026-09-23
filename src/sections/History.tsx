@@ -88,7 +88,7 @@ export default function History({
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">
                       {p.name} <span className="text-muted-foreground">·</span>{' '}
-                      <ExerciseIcon exercise={ex} className="inline h-3.5 w-3.5 align-[-0.15em]" /> {ex.name}
+                      <ExerciseIcon exercise={ex} className="inline h-4.5 w-4.5 align-[-0.15em]" /> {ex.name}
                     </p>
                     <p className="text-xs capitalize text-muted-foreground">{fmtDateFull(row.date)}</p>
                   </div>

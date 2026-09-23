@@ -242,13 +242,13 @@ export default function QuickLog({
                   key={e.id}
                   onClick={() => setExerciseId(e.id)}
                   className={cn(
-                    'flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
+                    'flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-colors',
                     exerciseId === e.id
                       ? 'border-transparent bg-volt text-background'
                       : 'border-border bg-secondary/50 text-foreground hover:bg-secondary',
                   )}
                 >
-                  <ExerciseIcon exercise={e} className="h-4 w-4" />
+                  <ExerciseIcon exercise={e} className="h-6 w-6" />
                   <span>{e.name}</span>
                   <span className={cn('text-xs', exerciseId === e.id ? 'text-background/70' : 'text-muted-foreground')}>
                     {e.unit}
@@ -382,7 +382,7 @@ export default function QuickLog({
                         onClick={submitFinish}
                         className="btn-glow ml-auto bg-volt px-6 font-black text-background hover:bg-volt/90"
                       >
-                        <Pictogram name="finish" className="mr-1.5 h-5 w-5" /> Фініш
+                        <Pictogram name="finish" className="mr-1.5 h-6 w-6" /> Фініш
                       </Button>
                     </div>
                   </>

@@ -160,7 +160,7 @@ export default function Leaderboard({ state }: { state: CompetitionState }) {
                     : 'border-border bg-secondary/50 hover:bg-secondary',
                 )}
               >
-                <ExerciseIcon exercise={e} className="h-4 w-4" />
+                <ExerciseIcon exercise={e} className="h-5 w-5" />
                 <span>{e.name}</span>
               </button>
             ))}

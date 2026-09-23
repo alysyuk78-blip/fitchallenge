@@ -76,7 +76,7 @@ export default function Stats({ state }: { state: CompetitionState }) {
                 : 'border-border bg-card hover:bg-secondary',
             )}
           >
-            <ExerciseIcon exercise={e} className="h-4 w-4" />
+            <ExerciseIcon exercise={e} className="h-5 w-5" />
             <span>{e.name}</span>
           </button>
         ))}

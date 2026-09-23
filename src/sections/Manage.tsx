@@ -113,7 +113,7 @@ export default function Manage({
           {state.exercises.map((e) => (
             <div key={e.id} className="flex items-center gap-3 px-4 py-2.5 sm:px-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-lg">
-                <ExerciseIcon exercise={e} className="h-5 w-5" />
+                <ExerciseIcon exercise={e} className="h-6 w-6" />
               </span>
               <div className="min-w-0">
                 <p className="truncate font-medium">{e.name}</p>

@@ -19,7 +19,7 @@ interface Props {
   className?: string
 }
 
-export default function ExerciseIcon({ exercise, className = 'h-4 w-4' }: Props) {
+export default function ExerciseIcon({ exercise, className = 'h-5 w-5' }: Props) {
   const pictogram = EXERCISE_PICTOGRAMS[exercise.id]
   if (pictogram) return <Pictogram name={pictogram} className={className} />
   return <span className={className}>{exercise.emoji}</span>

@@ -81,7 +81,7 @@ export default function LiveFeed({ state, synced }: { state: CompetitionState; s
                 <p className="min-w-0 flex-1 truncate text-sm">
                   <span className="font-medium">{p.name}</span>{' '}
                   <span className="text-muted-foreground">
-                    <ExerciseIcon exercise={ex} className="inline h-3.5 w-3.5 align-[-0.15em]" /> {ex.name}
+                    <ExerciseIcon exercise={ex} className="inline h-4.5 w-4.5 align-[-0.15em]" /> {ex.name}
                   </span>
                 </p>
                 <span className="shrink-0 text-base font-black text-volt">
