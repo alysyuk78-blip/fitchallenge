@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Crown, Medal, Target } from 'lucide-react'
 import CountUp from '@/components/CountUp'
+import ExerciseIcon from '@/components/ExerciseIcon'
 import { SKIP_REASONS, type CompetitionState, type Exercise } from '@/types'
 import { computeStandings, daySumFor, fmt, normLabel, normStatus, plural, rankExercise, streakDays } from '@/lib/score'
 import { todayLocal } from '@/hooks/useCompetition'
@@ -159,7 +160,7 @@ export default function Leaderboard({ state }: { state: CompetitionState }) {
                     : 'border-border bg-secondary/50 hover:bg-secondary',
                 )}
               >
-                <span>{e.emoji}</span>
+                <ExerciseIcon exercise={e} className="h-4 w-4" />
                 <span>{e.name}</span>
               </button>
             ))}

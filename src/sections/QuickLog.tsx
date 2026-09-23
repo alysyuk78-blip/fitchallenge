@@ -4,6 +4,7 @@ import { BedDouble, Flag, ListPlus, Plus, UserPlus, X, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ParticipantDialog from '@/components/ParticipantDialog'
+import ExerciseIcon from '@/components/ExerciseIcon'
 import { todayLocal } from '@/hooks/useCompetition'
 import type { SetDraft } from '@/hooks/useSetDrafts'
 import { fireConfetti } from '@/lib/confetti'
@@ -159,10 +160,10 @@ export default function QuickLog({
     )
   }
 
-  const MODE_UI: Record<Mode, { icon: ReactNode; title: string; tab: string }> = {
-    result: { icon: <Zap className="h-4 w-4 text-volt" />, title: 'Записати результат', tab: '💪 Разово' },
-    sets: { icon: <ListPlus className="h-4 w-4 text-volt" />, title: 'Підходи за день', tab: '🔢 Підходи' },
-    skip: { icon: <BedDouble className="h-4 w-4 text-volt" />, title: 'Зафіксувати пропуск', tab: '😴 Пропуск' },
+  const MODE_UI: Record<Mode, { icon: ReactNode; tabIcon: ReactNode; title: string; tab: string }> = {
+    result: { icon: <Zap className="h-4 w-4 text-volt" />, tabIcon: <Zap className="h-3.5 w-3.5" />, title: 'Записати результат', tab: 'Разово' },
+    sets: { icon: <ListPlus className="h-4 w-4 text-volt" />, tabIcon: <ListPlus className="h-3.5 w-3.5" />, title: 'Підходи за день', tab: 'Підходи' },
+    skip: { icon: <BedDouble className="h-4 w-4 text-volt" />, tabIcon: <BedDouble className="h-3.5 w-3.5" />, title: 'Зафіксувати пропуск', tab: 'Пропуск' },
   }
 
   return (
@@ -184,7 +185,10 @@ export default function QuickLog({
                 mode === m ? 'bg-volt text-background' : 'text-muted-foreground hover:text-foreground',
               )}
             >
-              {MODE_UI[m].tab}
+              <span className="flex items-center gap-1">
+                {MODE_UI[m].tabIcon}
+                {MODE_UI[m].tab}
+              </span>
             </button>
           ))}
         </div>
@@ -243,7 +247,7 @@ export default function QuickLog({
                       : 'border-border bg-secondary/50 text-foreground hover:bg-secondary',
                   )}
                 >
-                  <span>{e.emoji}</span>
+                  <ExerciseIcon exercise={e} className="h-4 w-4" />
                   <span>{e.name}</span>
                   <span className={cn('text-xs', exerciseId === e.id ? 'text-background/70' : 'text-muted-foreground')}>
                     {e.unit}

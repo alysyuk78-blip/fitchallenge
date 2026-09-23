@@ -102,7 +102,7 @@ export default function Home() {
                 </Button>
                 {openDraftsToday > 0 && (
                   <span
-                    title={`Незакриті підходи за сьогодні: ${openDraftsToday}. Відкрийте «🔢 Підходи» та натисніть «Фініш»`}
+                    title={`Незакриті підходи за сьогодні: ${openDraftsToday}. Відкрийте «Підходи» та натисніть «Фініш»`}
                     className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-black text-white shadow-lg"
                   >
                     {openDraftsToday}

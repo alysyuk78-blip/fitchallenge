@@ -12,6 +12,7 @@ import {
   YAxis,
 } from 'recharts'
 import { ChartLine, ChartColumn } from 'lucide-react'
+import ExerciseIcon from '@/components/ExerciseIcon'
 import type { CompetitionState } from '@/types'
 import { cumulativeSeries, fmt, fmtDate, totalFor } from '@/lib/score'
 import { cn } from '@/lib/utils'
@@ -75,7 +76,7 @@ export default function Stats({ state }: { state: CompetitionState }) {
                 : 'border-border bg-card hover:bg-secondary',
             )}
           >
-            <span>{e.emoji}</span>
+            <ExerciseIcon exercise={e} className="h-4 w-4" />
             <span>{e.name}</span>
           </button>
         ))}

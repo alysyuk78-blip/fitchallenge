@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Radio } from 'lucide-react'
+import ExerciseIcon from '@/components/ExerciseIcon'
 import { SKIP_REASONS, type CompetitionState } from '@/types'
 import { fmt } from '@/lib/score'
 import { todayLocal } from '@/hooks/useCompetition'
@@ -79,7 +80,9 @@ export default function LiveFeed({ state, synced }: { state: CompetitionState; s
                 <span className="text-xl">{p.emoji}</span>
                 <p className="min-w-0 flex-1 truncate text-sm">
                   <span className="font-medium">{p.name}</span>{' '}
-                  <span className="text-muted-foreground">{ex.emoji} {ex.name}</span>
+                  <span className="text-muted-foreground">
+                    <ExerciseIcon exercise={ex} className="inline h-3.5 w-3.5 align-[-0.15em]" /> {ex.name}
+                  </span>
                 </p>
                 <span className="shrink-0 text-base font-black text-volt">
                   +{fmt(row.value)}

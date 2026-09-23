@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import ParticipantDialog from '@/components/ParticipantDialog'
+import ExerciseIcon from '@/components/ExerciseIcon'
 import ExerciseDialog from '@/components/ExerciseDialog'
 import { normLabel, plural } from '@/lib/score'
 import type { CompetitionState, Exercise, Unit } from '@/types'
@@ -112,7 +113,7 @@ export default function Manage({
           {state.exercises.map((e) => (
             <div key={e.id} className="flex items-center gap-3 px-4 py-2.5 sm:px-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-lg">
-                {e.emoji}
+                <ExerciseIcon exercise={e} className="h-5 w-5" />
               </span>
               <div className="min-w-0">
                 <p className="truncate font-medium">{e.name}</p>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { History as HistoryIcon, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import ExerciseIcon from '@/components/ExerciseIcon'
 import { SKIP_REASONS, type CompetitionState } from '@/types'
 import { fmt, fmtDateFull, plural } from '@/lib/score'
 
@@ -86,7 +87,8 @@ export default function History({
                   <span className="text-xl">{p.emoji}</span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">
-                      {p.name} <span className="text-muted-foreground">·</span> {ex.emoji} {ex.name}
+                      {p.name} <span className="text-muted-foreground">·</span>{' '}
+                      <ExerciseIcon exercise={ex} className="inline h-3.5 w-3.5 align-[-0.15em]" /> {ex.name}
                     </p>
                     <p className="text-xs capitalize text-muted-foreground">{fmtDateFull(row.date)}</p>
                   </div>
