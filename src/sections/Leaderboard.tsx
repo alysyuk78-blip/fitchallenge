@@ -33,6 +33,62 @@ function NormBadge({ exercise, daySum }: { exercise: Exercise; daySum: number })
 export default function Leaderboard({ state }: { state: CompetitionState }) {
   const standings = useMemo(() => computeStandings(state), [state])
   const [exerciseId, setExerciseId] = useState<string | null>(state.exercises[0]?.id ?? null)
+  const [medalsOpen, setMedalsOpen] = useState<string | null>(null)
+
+  // Розшифровка медалей: учасник → у яких вправах яке місце
+  const medalDetails = useMemo(() => {
+    const map = new Map<string, { exercise: Exercise; rank: number }[]>()
+    for (const ex of state.exercises) {
+      for (const r of rankExercise(state.participants, state.entries, ex.id)) {
+        if (r.rank <= 3) {
+          const arr = map.get(r.participant.id) ?? []
+          arr.push({ exercise: ex, rank: r.rank })
+          map.set(r.participant.id, arr)
+        }
+      }
+    }
+    return map
+  }, [state])
+
+  const toggleMedals = (participantId: string) =>
+    setMedalsOpen((cur) => (cur === participantId ? null : participantId))
+
+  /** Кнопка медалей + розгорнута розшифровка */
+  const MedalBreakdown = ({ participantId, compact }: { participantId: string; compact?: boolean }) => {
+    const details = medalDetails.get(participantId)
+    if (!details || details.length === 0) return null
+    const gold = details.filter((d) => d.rank === 1).length
+    const silver = details.filter((d) => d.rank === 2).length
+    const bronze = details.filter((d) => d.rank === 3).length
+    const open = medalsOpen === participantId
+    return (
+      <span className={cn('flex flex-col', compact ? '' : 'ml-auto')}>
+        <button
+          onClick={() => toggleMedals(participantId)}
+          title="Натисніть — у яких вправах медалі"
+          className={cn(
+            'flex gap-1.5 rounded-md px-1 py-0.5 transition-colors hover:bg-secondary',
+            open && 'bg-secondary',
+          )}
+        >
+          {gold > 0 && <span>🥇×{gold}</span>}
+          {silver > 0 && <span>🥈×{silver}</span>}
+          {bronze > 0 && <span>🥉×{bronze}</span>}
+        </button>
+        {open && (
+          <span className="mt-1.5 flex flex-col gap-1 rounded-lg border border-border bg-secondary/60 p-2 text-left text-xs font-normal rise-in">
+            {details.map((d) => (
+              <span key={d.exercise.id} className="flex items-center gap-1.5">
+                <span>{MEDAL[d.rank - 1]}</span>
+                <ExerciseIcon exercise={d.exercise} className="h-4 w-4" />
+                <span className="text-foreground">{d.exercise.name}</span>
+              </span>
+            ))}
+          </span>
+        )}
+      </span>
+    )
+  }
   const exercise = state.exercises.find((e) => e.id === exerciseId) ?? state.exercises[0]
   const ranked = useMemo(
     () => (exercise ? rankExercise(state.participants, state.entries, exercise.id) : []),
@@ -90,11 +146,7 @@ export default function Leaderboard({ state }: { state: CompetitionState }) {
             <div className="mt-2 flex items-baseline gap-3 text-sm text-muted-foreground">
               <CountUp value={row.points} className="text-2xl font-black text-foreground" />
               <span>{plural(row.points, 'бал', 'бали', 'балів')}</span>
-              <span className="ml-auto flex gap-1.5">
-                {row.gold > 0 && <span>🥇×{row.gold}</span>}
-                {row.silver > 0 && <span>🥈×{row.silver}</span>}
-                {row.bronze > 0 && <span>🥉×{row.bronze}</span>}
-              </span>
+              <MedalBreakdown participantId={row.participant.id} />
             </div>
             {(() => {
               const streak = streakDays(state.entries, row.participant.id, today)
@@ -121,11 +173,7 @@ export default function Leaderboard({ state }: { state: CompetitionState }) {
               <span className="text-xl">{row.participant.emoji}</span>
               <span className="font-medium">{row.participant.name}</span>
               <span className="ml-auto flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="flex gap-1.5">
-                  {row.gold > 0 && <span>🥇×{row.gold}</span>}
-                  {row.silver > 0 && <span>🥈×{row.silver}</span>}
-                  {row.bronze > 0 && <span>🥉×{row.bronze}</span>}
-                </span>
+                <MedalBreakdown participantId={row.participant.id} compact />
                 <span className="font-bold text-foreground">
                   {row.points} {plural(row.points, 'бал', 'бали', 'балів')}
                 </span>
