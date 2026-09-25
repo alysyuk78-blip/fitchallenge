@@ -27,6 +27,14 @@ const DATA_FILE = path.join(DATA_DIR, 'rooms.json')
 const MAX_BODY = 2 * 1024 * 1024 // 2 МБ — з запасом для великої історії
 const DIST_DIR = path.join(__dirname, '..', 'dist')
 
+// Резервне копіювання у приватний GitHub-репозиторій (на хостингу з тимчасовим диском).
+// Задається змінними середовища: GITHUB_BACKUP_TOKEN, GITHUB_BACKUP_REPO (owner/name),
+// GITHUB_BACKUP_FILE (за замовчуванням rooms.json). Без них бекап просто вимкнено.
+const GH_TOKEN = process.env.GITHUB_BACKUP_TOKEN || ''
+const GH_REPO = process.env.GITHUB_BACKUP_REPO || ''
+const GH_FILE = process.env.GITHUB_BACKUP_FILE || 'rooms.json'
+const BACKUP_ON = Boolean(GH_TOKEN && GH_REPO)
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -56,6 +64,79 @@ function loadData() {
   }
 }
 
+// ── Резервна копія у приватному GitHub-репозиторії ──────────────────────────
+let backupSha = null
+let backupTimer = null
+let backupDirty = false
+
+async function ghApi(method, apiPath, body) {
+  const res = await fetch(`https://api.github.com${apiPath}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${GH_TOKEN}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'fitchallenge-sync',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error(`GitHub API: ${res.status}`)
+  return res.json()
+}
+
+/** Відновлення даних при старті, якщо локальний файл порожній (свіжий деплой) */
+async function restoreFromBackup() {
+  if (!BACKUP_ON) return
+  try {
+    const file = await ghApi('GET', `/repos/${GH_REPO}/contents/${GH_FILE}`)
+    if (!file || !file.content) {
+      console.log('☁️  Резервної копії поки нема — починаємо з чистого аркуша')
+      return
+    }
+    rooms = JSON.parse(Buffer.from(String(file.content).replace(/\n/g, ''), 'base64').toString('utf8'))
+    backupSha = file.sha
+    console.log(`☁️  Відновлено з резервної копії: ${Object.keys(rooms).length} кімнат(и)`)
+  } catch (e) {
+    console.error('☁️  Не вдалося відновити резервну копію:', e.message)
+  }
+}
+
+async function pushBackup() {
+  if (!backupDirty) return
+  backupDirty = false
+  try {
+    const content = Buffer.from(JSON.stringify(rooms, null, 1)).toString('base64')
+    const body = { message: `backup ${new Date().toISOString()}`, content }
+    if (backupSha) body.sha = backupSha
+    const res = await ghApi('PUT', `/repos/${GH_REPO}/contents/${GH_FILE}`, body)
+    backupSha = res && res.content && res.content.sha ? res.content.sha : backupSha
+    console.log('☁️  Резервну копію оновлено')
+  } catch (e) {
+    // можливо, sha застарів — заберемо свіжий і спробуємо ще раз
+    try {
+      const file = await ghApi('GET', `/repos/${GH_REPO}/contents/${GH_FILE}`)
+      backupSha = file && file.sha ? file.sha : null
+      const content = Buffer.from(JSON.stringify(rooms, null, 1)).toString('base64')
+      const body = { message: `backup ${new Date().toISOString()}`, content }
+      if (backupSha) body.sha = backupSha
+      const res = await ghApi('PUT', `/repos/${GH_REPO}/contents/${GH_FILE}`, body)
+      backupSha = res && res.content && res.content.sha ? res.content.sha : backupSha
+      console.log('☁️  Резервну копію оновлено (після конфлікту)')
+    } catch (e2) {
+      backupDirty = true // повторимо при наступній зміні
+      console.error('☁️  Помилка резервного копіювання:', e2.message)
+    }
+  }
+}
+
+function scheduleBackup() {
+  if (!BACKUP_ON) return
+  backupDirty = true
+  clearTimeout(backupTimer)
+  backupTimer = setTimeout(pushBackup, 15000) // дебаунс 15 с
+}
+
 let saveTimer = null
 function saveData() {
   // дебаунс запису на диск
@@ -68,6 +149,7 @@ function saveData() {
       console.error('Помилка збереження:', e.message)
     }
   }, 200)
+  scheduleBackup()
 }
 
 function makeCode() {
@@ -146,7 +228,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return send(res, 204, {})
 
   if (req.method === 'GET' && url.pathname === '/api/health') {
-    return send(res, 200, { ok: true, rooms: Object.keys(rooms).length })
+    return send(res, 200, { ok: true, rooms: Object.keys(rooms).length, backup: BACKUP_ON })
   }
   if (parts[0] === 'api' && parts[1] === 'rooms') {
     // Створити кімнату
@@ -207,7 +289,18 @@ const server = http.createServer(async (req, res) => {
 })
 
 loadData()
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`🏆 FitChallenge sync server: http://localhost:${PORT}`)
   console.log(`   Кімнат у пам'яті: ${Object.keys(rooms).length} · дані: ${DATA_FILE}`)
+  // Свіжий деплой = порожній тимчасовий диск → відновлюємо з резервної копії
+  if (Object.keys(rooms).length === 0) await restoreFromBackup()
 })
+
+// Перед зупинкою (деплой/перезапуск) — встигаємо записати резервну копію
+async function shutdown() {
+  clearTimeout(backupTimer)
+  if (BACKUP_ON && backupDirty) await pushBackup()
+  process.exit(0)
+}
+process.on('SIGTERM', shutdown)
+process.on('SIGINT', shutdown)
