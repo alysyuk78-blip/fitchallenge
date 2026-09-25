@@ -71,6 +71,9 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-volt">Змагання друзів</p>
             <h1 className="font-display mt-1 text-4xl font-black uppercase leading-none sm:text-5xl">
               Fit<span className="text-volt">Challenge</span>
+              <span className="ml-1.5 hidden align-super text-[10px] font-semibold lowercase tracking-normal text-muted-foreground/40 sm:inline">
+                кімі
+              </span>
             </h1>
             <p className="mt-2 max-w-md text-sm italic text-muted-foreground">«{quote}»</p>
           </div>
@@ -245,6 +248,7 @@ export default function Home() {
         {sync.config
           ? `Синхронізація через кімнату ${sync.config.roomCode} · FitChallenge`
           : 'Дані зберігаються локально · увімкніть «Спільний доступ» для гри з друзями · FitChallenge'}
+        <span className="text-muted-foreground/40"> · кімі</span>
       </footer>
     </div>
   )
