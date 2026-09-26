@@ -165,14 +165,24 @@ export interface DayWinnerRow {
   participant: Participant
   points: number
   golds: number
+  silvers: number
+  /** сумарний обсяг за день (усі вправи) — фінальний тай-брейк */
+  volume: number
 }
 
 /**
- * Чемпіон(и) дня: за кожну вправу дня медалі дають 3/2/1 бал,
- * переможець — хто набрав найбільше балів за день. Можлива нічия.
+ * Чемпіон дня — завжди ОДИН. Бали 3/2/1 за місця в вправах дня;
+ * при рівності балів тай-брейк: більше золота → більше срібла →
+ * більший сумарний обсяг → стабільний id (детерміновано).
  */
 export function dayWinners(state: CompetitionState, date: string): DayWinnerRow[] {
-  const rows: DayWinnerRow[] = state.participants.map((p) => ({ participant: p, points: 0, golds: 0 }))
+  const rows: DayWinnerRow[] = state.participants.map((p) => ({
+    participant: p,
+    points: 0,
+    golds: 0,
+    silvers: 0,
+    volume: 0,
+  }))
   const byId = new Map(rows.map((r) => [r.participant.id, r]))
   for (const ex of state.exercises) {
     const dayEntries = state.entries.filter((e) => e.exerciseId === ex.id && e.date === date)
@@ -184,13 +194,29 @@ export function dayWinners(state: CompetitionState, date: string): DayWinnerRow[
       if (r.rank === 1) {
         row.points += 3
         row.golds += 1
-      } else if (r.rank === 2) row.points += 2
-      else if (r.rank === 3) row.points += 1
+      } else if (r.rank === 2) {
+        row.points += 2
+        row.silvers += 1
+      } else if (r.rank === 3) row.points += 1
     }
+  }
+  for (const e of state.entries) {
+    if (e.date !== date) continue
+    const row = byId.get(e.participantId)
+    if (row) row.volume += e.value
   }
   const best = Math.max(0, ...rows.map((r) => r.points))
   if (best === 0) return []
-  return rows.filter((r) => r.points === best)
+  const top = rows.filter((r) => r.points === best)
+  if (top.length === 1) return top
+  top.sort(
+    (a, b) =>
+      b.golds - a.golds ||
+      b.silvers - a.silvers ||
+      b.volume - a.volume ||
+      a.participant.id.localeCompare(b.participant.id),
+  )
+  return [top[0]]
 }
 
 /* ── Чемпіони за періодами ── */
