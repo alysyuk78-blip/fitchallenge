@@ -55,6 +55,11 @@ export default function Champions({ state }: { state: CompetitionState }) {
         ))}
       </div>
 
+      <p className="text-xs text-muted-foreground">
+        Бали: 🥇 = 3 · 🥈 = 2 · 🥉 = 1 за кожну вправу. При рівності балів перемагає той, у кого
+        більше 🥇, далі 🥈, далі — більший обсяг роботи.
+      </p>
+
       {!hasResults ? (
         <p className="rounded-xl border border-dashed border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
           За цей період ще немає результатів — час відкрити рахунок! 💪
