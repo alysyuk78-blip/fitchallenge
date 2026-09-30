@@ -1,0 +1,18 @@
+# Keep-alive: безкоштовний план Render засинає після 15 хв без активності.
+# Цей workflow пінгує сервер кожні 10 хвилин, щоб додаток завжди відкривався миттєво.
+name: keep-alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # ручний запуск з вкладки Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping Render health
+        run: |
+          echo "Пінг $(date -u)"
+          curl -fsS --max-time 120 --retry 2 https://fit-challenge.onrender.com/api/health
